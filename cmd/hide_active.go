@@ -30,6 +30,6 @@ var HideActiveCmd = &cli.Command{
 			fmt.Println("Failed to save hidden window")
 			return nil
 		}
-		return nil
+		return signal_waybar()
 	},
 }

@@ -53,6 +53,25 @@ func SaveHiddenWindow(window *models.Window) error {
 	return nil
 }
 
+func LoadAllHiddenWindows(workspaceID int) ([]models.Window, error) {
+	filePath := fmt.Sprintf("/tmp/hyprwwhide/%d.json", workspaceID)
+	var windows []models.Window
+
+	if _, err := os.Stat(filePath); err == nil {
+		fileContent, err := os.ReadFile(filePath)
+		if err != nil {
+			return nil, err
+		}
+
+		err = json.Unmarshal(fileContent, &windows)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return windows, nil
+}
+
 func LoadLatestWindow(workspaceID int) (*models.Window, error) {
 	filePath := fmt.Sprintf("/tmp/hyprwwhide/%d.json", workspaceID)
 	var windows []models.Window
