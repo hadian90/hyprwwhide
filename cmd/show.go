@@ -19,24 +19,31 @@ var ShowCmd = &cli.Command{
 		},
 	},
 	Action: func(c *cli.Context) error {
-		// fmt.Println("Showing hidden window on the current workspace.")
 		activeWorkspace := utils.GetActiveWorkspace()
 		if activeWorkspace == nil {
-			fmt.Println("Failed to get active workspace")
-			return nil
+			return fmt.Errorf("failed to get active workspace")
 		}
-		// fmt.Printf("Active workspace: %s\n", activeWorkspace.Name)
 
 		windows, err := utils.LoadAllHiddenWindows(activeWorkspace.ID)
 		if err != nil {
-			fmt.Println("Failed to load hidden windows")
-			return nil
+			return fmt.Errorf("failed to load hidden windows: %w", err)
 		}
+
 		if c.Bool("number") {
 			fmt.Printf("%d\n", len(windows))
 		} else {
-			fmt.Printf("Hidden windows: %v\n", windows)
+			// Improve the display of windows with more detailed information
+			if len(windows) == 0 {
+				fmt.Println("No hidden windows in this workspace")
+			} else {
+				fmt.Printf("Hidden windows in workspace %d (%s):\n",
+					activeWorkspace.ID, activeWorkspace.Name)
+				for i, window := range windows {
+					fmt.Printf("%d. Address: %s\n", i+1, window.Address)
+				}
+			}
 		}
+
 		return nil
 	},
 }
