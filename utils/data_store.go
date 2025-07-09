@@ -16,7 +16,7 @@ func CheckIfMainFolderExist() error {
 	return nil
 }
 
-func SaveHiddenWindow(window *models.Window) error {
+func DS_SaveHiddenWindow(window *models.Window) error {
 	filePath := fmt.Sprintf("/tmp/hyprwwhide/%d.json", window.Workspace.ID)
 	var windows []models.Window
 
@@ -53,7 +53,7 @@ func SaveHiddenWindow(window *models.Window) error {
 	return nil
 }
 
-func LoadAllHiddenWindows(workspaceID int) ([]models.Window, error) {
+func DS_LoadAllHiddenWindows(workspaceID int) ([]models.Window, error) {
 	filePath := fmt.Sprintf("/tmp/hyprwwhide/%d.json", workspaceID)
 	var windows []models.Window
 
@@ -72,7 +72,7 @@ func LoadAllHiddenWindows(workspaceID int) ([]models.Window, error) {
 	return windows, nil
 }
 
-func LoadLatestWindow(workspaceID int) (*models.Window, error) {
+func DS_LoadLatestWindow(workspaceID int) (*models.Window, error) {
 	filePath := fmt.Sprintf("/tmp/hyprwwhide/%d.json", workspaceID)
 	var windows []models.Window
 
@@ -95,7 +95,7 @@ func LoadLatestWindow(workspaceID int) (*models.Window, error) {
 	return nil, fmt.Errorf("no windows found for workspace ID %d", workspaceID)
 }
 
-func DeleteHiddenWindow(window *models.Window) error {
+func DS_DeleteHiddenWindow(window *models.Window) error {
 	filePath := fmt.Sprintf("/tmp/hyprwwhide/%d.json", window.Workspace.ID)
 	var windows []models.Window
 

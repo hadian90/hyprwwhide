@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/hadian90/hyprwwhide/models"
 	"github.com/hadian90/hyprwwhide/utils"
@@ -15,22 +16,19 @@ var RevealCmd = &cli.Command{
 	Action: func(c *cli.Context) error {
 		windowID := c.Args().First()
 		activeWorkspace := utils.GetActiveWorkspace()
-		if activeWorkspace == nil {
-			return fmt.Errorf("failed to get active workspace")
-		}
 
 		if windowID == "" || windowID == "last" {
-			fmt.Printf("Revealing %s hidden window.\n", windowID)
+			log.Printf("Revealing %s hidden window.\n", windowID)
 
-			latestWindow, err := utils.LoadLatestWindow(activeWorkspace.ID)
+			latestWindow, err := utils.DS_LoadLatestWindow(activeWorkspace.ID)
 			if err != nil {
 				return fmt.Errorf("failed to load latest window: %w", err)
 			}
 
-			fmt.Printf("Latest window: %s\n", latestWindow.Address)
+			log.Printf("Latest window: %s\n", latestWindow.Address)
 			return revealWindowHandler(latestWindow)
 		} else {
-			fmt.Printf("Revealing window with ID: %s\n", windowID)
+			log.Printf("Revealing window with ID: %s\n", windowID)
 			// Include workspace information for the window
 			loadWindow := models.Window{
 				Address:   windowID,
@@ -44,25 +42,24 @@ var RevealCmd = &cli.Command{
 func revealWindowHandler(window *models.Window) error {
 	// Step 1: Reveal the window
 	if err := utils.RevealWindow(window); err != nil {
-		return fmt.Errorf("failed to reveal window %s: %w", window.Address, err)
+		return nil
 	}
-	fmt.Printf("Revealed window: %s\n", window.Address)
+	log.Printf("Revealed window: %s\n", window.Address)
 
 	// Step 2: Delete from hidden windows list
-	if err := utils.DeleteHiddenWindow(window); err != nil {
-		return fmt.Errorf("failed to delete hidden window %s: %w", window.Address, err)
+	if err := utils.DS_DeleteHiddenWindow(window); err != nil {
+		// if failed to delete, window record are still in the hidden windows list
+		// but the window is already revealed
+		log.Printf("Failed to delete hidden window %s: %v", window.Address, err)
+		return nil
 	}
 
 	// Step 3: Focus the window
 	if err := utils.FocusWindow(window); err != nil {
-		return fmt.Errorf("failed to focus window %s: %w", window.Address, err)
+		return nil
 	}
-	fmt.Printf("Focused window: %s\n", window.Address)
+	log.Printf("Focused window: %s\n", window.Address)
 
 	// Step 4: Signal waybar to update
-	if err := signal_waybar(); err != nil {
-		return fmt.Errorf("failed to signal waybar: %w", err)
-	}
-
-	return nil
+	return signal_waybar()
 }

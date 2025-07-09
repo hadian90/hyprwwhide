@@ -20,11 +20,8 @@ var ShowCmd = &cli.Command{
 	},
 	Action: func(c *cli.Context) error {
 		activeWorkspace := utils.GetActiveWorkspace()
-		if activeWorkspace == nil {
-			return fmt.Errorf("failed to get active workspace")
-		}
 
-		windows, err := utils.LoadAllHiddenWindows(activeWorkspace.ID)
+		windows, err := utils.DS_LoadAllHiddenWindows(activeWorkspace.ID)
 		if err != nil {
 			return fmt.Errorf("failed to load hidden windows: %w", err)
 		}
