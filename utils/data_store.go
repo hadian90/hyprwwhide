@@ -8,16 +8,29 @@ import (
 	"github.com/hadian90/hyprwwhide/models"
 )
 
+// Default data directory
+var dataDir = "/tmp/hyprwwhide"
+
+// SetDataDir allows changing the data directory (useful for testing)
+func SetDataDir(dir string) {
+	dataDir = dir
+}
+
+// GetDataDir returns the current data directory
+func GetDataDir() string {
+	return dataDir
+}
+
 func CheckIfMainFolderExist() error {
-	if _, err := os.Stat("/tmp/hyprwwhide"); err != nil {
+	if _, err := os.Stat(dataDir); err != nil {
 		// create folder
-		os.Mkdir("/tmp/hyprwwhide", 0755)
+		os.Mkdir(dataDir, 0755)
 	}
 	return nil
 }
 
 func DS_SaveHiddenWindow(window *models.Window) error {
-	filePath := fmt.Sprintf("/tmp/hyprwwhide/%d.json", window.Workspace.ID)
+	filePath := fmt.Sprintf("%s/%d.json", dataDir, window.Workspace.ID)
 	var windows []models.Window
 
 	// Check if the file already exists and read existing data
@@ -54,7 +67,7 @@ func DS_SaveHiddenWindow(window *models.Window) error {
 }
 
 func DS_LoadAllHiddenWindows(workspaceID int) ([]models.Window, error) {
-	filePath := fmt.Sprintf("/tmp/hyprwwhide/%d.json", workspaceID)
+	filePath := fmt.Sprintf("%s/%d.json", dataDir, workspaceID)
 	var windows []models.Window
 
 	if _, err := os.Stat(filePath); err == nil {
@@ -73,7 +86,7 @@ func DS_LoadAllHiddenWindows(workspaceID int) ([]models.Window, error) {
 }
 
 func DS_LoadLatestWindow(workspaceID int) (*models.Window, error) {
-	filePath := fmt.Sprintf("/tmp/hyprwwhide/%d.json", workspaceID)
+	filePath := fmt.Sprintf("%s/%d.json", dataDir, workspaceID)
 	var windows []models.Window
 
 	if _, err := os.Stat(filePath); err == nil {
@@ -96,7 +109,7 @@ func DS_LoadLatestWindow(workspaceID int) (*models.Window, error) {
 }
 
 func DS_DeleteHiddenWindow(window *models.Window) error {
-	filePath := fmt.Sprintf("/tmp/hyprwwhide/%d.json", window.Workspace.ID)
+	filePath := fmt.Sprintf("%s/%d.json", dataDir, window.Workspace.ID)
 	var windows []models.Window
 
 	// Check if the file already exists and read existing data
