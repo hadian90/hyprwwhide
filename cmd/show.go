@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/hadian90/hyprwwhide/utils"
 	"github.com/urfave/cli/v2"
@@ -17,6 +19,11 @@ var ShowCmd = &cli.Command{
 			Value: false,
 			Usage: "Only show the number of hidden windows",
 		},
+		&cli.BoolFlag{
+			Name:  "waybar",
+			Value: false,
+			Usage: "Show the number of hidden windows for waybar",
+		},
 	},
 	Action: func(c *cli.Context) error {
 		activeWorkspace := utils.GetActiveWorkspace()
@@ -28,6 +35,13 @@ var ShowCmd = &cli.Command{
 
 		if c.Bool("number") {
 			fmt.Printf("%d\n", len(windows))
+		} else if c.Bool("waybar") {
+			// return json
+			class := "notEmpty"
+			if len(windows) == 0 {
+				class = "empty"
+			}
+			json.NewEncoder(os.Stdout).Encode(map[string]interface{}{"text": len(windows), "class": class})
 		} else {
 			// Improve the display of windows with more detailed information
 			if len(windows) == 0 {
